@@ -1,0 +1,19 @@
+{
+  "name": "@pyrogenic/memo",
+  "version": "1.0.0",
+  "description": "Typescript Memoization Library",
+  "types": "./lib/index.js",
+  "repository": "https://github.com/pyrogenic/memo",
+  "author": "Joshua Pollak <abottomlesspit@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "preinstall": "yarn tsc --project .",
+    "watch": "yarn preinstall --watch"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}
