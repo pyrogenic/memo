@@ -1,7 +1,8 @@
 import IMemo from "./IMemo";
+import IMemoFactoryOptions from "./IMemoFactoryOptions";
 import IMemoOptions from "./IMemoOptions";
 
-interface IRedisMemoProps<TProps, TResult> {
+interface IRedisMemoProps<TProps, TResult, TSerialized> extends IMemoFactoryOptions<TProps, TResult, TSerialized> {
     webdis: string;
     /**
      * scheme to turn props into a redis key name
@@ -14,17 +15,23 @@ interface IRedisMemoProps<TProps, TResult> {
 /**
  * Memoization backed by {@link https://github.com/nicolasff/webdis | Webdis}.
  */
-export default class RedisMemo<TProps, TResult> implements IMemo<TProps, TResult> {
+export default class RedisMemo<TProps, TResult, TSerialized = {}> implements IMemo<TProps, TResult> {
+    defaultOptions: IMemoOptions = { bypass: false, cache: true };
+
     public readonly webdis: string;
     public readonly name: (props: TProps) => string[];
     public readonly factory: (props: TProps) => Promise<TResult>;
     public readonly validate?: (result: TResult) => boolean;
+    public readonly hydrate: ((data: TSerialized) => TResult) | undefined;
+    public readonly prepare: ((result: TResult) => Promise<TSerialized>) | undefined;
 
-    constructor({ webdis, name, factory, validate }: IRedisMemoProps<TProps, TResult>) {
+    constructor({ webdis, name, factory, validate, hydrate, prepare }: IRedisMemoProps<TProps, TResult, TSerialized>) {
         this.webdis = webdis;
         this.name = name;
         this.factory = factory;
         this.validate = validate;
+        this.hydrate = hydrate;
+        this.prepare = prepare;
     }
 
     public get = async (props: TProps, { cache, bypass }: IMemoOptions = {}) => {
@@ -35,7 +42,8 @@ export default class RedisMemo<TProps, TResult> implements IMemo<TProps, TResult
             const url = `${this.webdis}/GET/${key}.txt`;
             const { cachedValue, success } = await this.go(url);
             if (success) {
-                const parse = JSON.parse(cachedValue) as TResult;
+                const json = JSON.parse(cachedValue) as TSerialized;
+                const parse = this.hydrate ? this.hydrate(json) : json as unknown as TResult;
                 const valid = this.validate?.(parse) ?? "no validate func";
                 if (valid) {
                     return parse;
@@ -46,16 +54,16 @@ export default class RedisMemo<TProps, TResult> implements IMemo<TProps, TResult
         if (cache) {
             const valid = this.validate?.(newValue) ?? "no validate func";
             if (valid) {
-                await this.cache(props, newValue, key);
+                await this.cacheInternal(props, newValue, key);
             }
         }
         return newValue;
     }
 
-    /** @todo remove {key} from public API */
-    public cache = async (props: TProps, value: TResult, key?: string) => {
+    private cacheInternal = async (props: TProps, value: TResult, key?: string) => {
         key = key ?? this.key(props);
-        const stringValue = JSON.stringify(value);
+        const json = this.prepare ? await this.prepare(value) : value as unknown as TSerialized;
+        const stringValue = JSON.stringify(json);
         await fetch(`${this.webdis}/SET/${key}`, {
             body: stringValue,
             headers: {
@@ -64,6 +72,8 @@ export default class RedisMemo<TProps, TResult> implements IMemo<TProps, TResult
             method: "PUT",
         });
     }
+
+    public cache: (props: TProps, value: TResult) => Promise<void> = this.cacheInternal;
 
     public has = async (props: TProps) => {
         const key = this.key(props);

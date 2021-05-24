@@ -7,9 +7,6 @@ type FetchMemo = IMemo<[
     init?: RequestInit,
 ], Response>;
 
-type Unwrap<T> = T extends Promise<infer Q> ? Q :
-    T extends (() => Promise<infer Q>) ? Q : T;
-
 type SerializedResponse = {
     json: object,
     url: string,
@@ -60,7 +57,6 @@ export default class MemoizedFetch {
             clone: () => result,
             redirected: false,
             trailer: Promise.resolve(new Headers()),
-            type: "default",
             formData: () => Promise.resolve(new FormData()),
         };
         return result;
@@ -85,6 +81,10 @@ export default class MemoizedFetch {
                 break;
         }
         this.memo = memoType;
+    }
+
+    public get online() {
+        return this.memo
     }
 
     public fetch = async (input: RequestInfo, init?: RequestInit, options?: IMemoOptions): Promise<Response> => {

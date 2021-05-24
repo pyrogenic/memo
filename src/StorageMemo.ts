@@ -6,6 +6,11 @@ export default class StorageMemo<TProps, TResult, TSerialized = {}> implements
     IMemo<TProps, TResult>,
     Readonly<IMemoFactoryOptions<TProps, TResult, TSerialized>> {
 
+    public defaultOptions: IMemoOptions = {
+        bypass: false,
+        cache: true,
+    };
+
     public readonly storage: Storage;
     public readonly name: string;
     public readonly factory: IMemoFactoryOptions<TProps, TResult, TSerialized>["factory"];
@@ -23,8 +28,8 @@ export default class StorageMemo<TProps, TResult, TSerialized = {}> implements
     }
 
     public get = async (props: TProps, { cache, bypass }: IMemoOptions = {}) => {
-        if (cache === undefined) { cache = true; }
-        if (bypass === undefined) { bypass = false; }
+        if (cache === undefined) { cache = this.defaultOptions.cache; }
+        if (bypass === undefined) { bypass = this.defaultOptions.bypass; }
         const key = `${this.name}/${JSON.stringify(props)}`;
         const cachedValue = !bypass && this.storage.getItem(key);
         if (cachedValue) {
