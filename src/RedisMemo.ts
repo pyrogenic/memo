@@ -8,8 +8,6 @@ interface IRedisMemoProps<TProps, TResult, TSerialized> extends IMemoFactoryOpti
      * scheme to turn props into a redis key name
      */
     name: (props: TProps) => string[];
-    factory: (props: TProps) => Promise<TResult>;
-    validate?: (result: TResult) => boolean;
 }
 
 /**
@@ -20,10 +18,10 @@ export default class RedisMemo<TProps, TResult, TSerialized = {}> implements IMe
 
     public readonly webdis: string;
     public readonly name: (props: TProps) => string[];
-    public readonly factory: (props: TProps) => Promise<TResult>;
-    public readonly validate?: (result: TResult) => boolean;
-    public readonly hydrate: ((data: TSerialized) => TResult) | undefined;
-    public readonly prepare: ((result: TResult) => Promise<TSerialized>) | undefined;
+    public readonly factory: IMemoFactoryOptions<TProps, TResult, TSerialized>["factory"];
+    public readonly validate: IMemoFactoryOptions<TProps, TResult, TSerialized>["validate"];
+    public readonly prepare: IMemoFactoryOptions<TProps, TResult, TSerialized>["prepare"];
+    public readonly hydrate: IMemoFactoryOptions<TProps, TResult, TSerialized>["hydrate"];
 
     constructor({ webdis, name, factory, validate, hydrate, prepare }: IRedisMemoProps<TProps, TResult, TSerialized>) {
         this.webdis = webdis;
