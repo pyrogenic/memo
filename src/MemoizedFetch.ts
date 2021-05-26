@@ -83,10 +83,6 @@ export default class MemoizedFetch {
         this.memo = memoType;
     }
 
-    public get online() {
-        return this.memo
-    }
-
     public fetch = async (input: RequestInfo, init?: RequestInit, options?: IMemoOptions): Promise<Response> => {
         return this.memo.get([input, init], options);
     }

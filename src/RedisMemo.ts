@@ -14,7 +14,7 @@ interface IRedisMemoProps<TProps, TResult, TSerialized> extends IMemoFactoryOpti
  * Memoization backed by {@link https://github.com/nicolasff/webdis | Webdis}.
  */
 export default class RedisMemo<TProps, TResult, TSerialized = {}> implements IMemo<TProps, TResult> {
-    defaultOptions: IMemoOptions = { bypass: false, cache: true };
+    defaultOptions: Required<IMemoOptions> = { bypass: false, cache: true, log: false };
 
     public readonly webdis: string;
     public readonly name: (props: TProps) => string[];
