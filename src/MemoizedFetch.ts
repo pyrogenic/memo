@@ -56,7 +56,6 @@ export default class MemoizedFetch {
             bodyUsed: true,
             clone: () => result,
             redirected: false,
-            trailer: Promise.resolve(new Headers()),
             formData: () => Promise.resolve(new FormData()),
         };
         return result;

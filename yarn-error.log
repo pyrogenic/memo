@@ -1,0 +1,49 @@
+Arguments: 
+  /opt/homebrew/Cellar/node/18.0.0/bin/node /opt/homebrew/Cellar/yarn/1.22.18/libexec/bin/yarn.js
+
+PATH: 
+  /opt/homebrew/opt/openjdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  18.0.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  SyntaxError: /Users/joshua.pollak/github/pyrogenic/sym/package.json: Unexpected token } in JSON at position 582
+      at JSON.parse (<anonymous>)
+      at /opt/homebrew/Cellar/yarn/1.22.18/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/opt/homebrew/Cellar/yarn/1.22.18/libexec/lib/cli.js:310:30)
+      at /opt/homebrew/Cellar/yarn/1.22.18/libexec/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "@pyrogenic/memo",
+    "version": "1.0.0",
+    "description": "Typescript Memoization Library",
+    "types": "./lib/index.js",
+    "repository": "https://github.com/pyrogenic/memo",
+    "author": "Joshua Pollak <abottomlesspit@gmail.com>",
+    "license": "MIT",
+    "files": [
+      "lib"
+    ],
+    "scripts": {
+      "preinstall": "yarn tsc --project .",
+      "watch": "yarn preinstall --watch"
+    },
+    "devDependencies": {
+      "typescript": "~4.6.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
