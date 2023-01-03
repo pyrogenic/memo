@@ -10,7 +10,7 @@
     "lib"
   ],
   "scripts": {
-    "preinstall": "yarn tsc --project .",
+    "preinstall": "yarn tsc",
     "watch": "yarn preinstall --watch"
   },
   "devDependencies": {
